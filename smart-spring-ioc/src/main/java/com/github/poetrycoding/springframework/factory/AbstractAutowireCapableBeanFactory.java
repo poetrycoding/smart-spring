@@ -1,6 +1,10 @@
 package com.github.poetrycoding.springframework.factory;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.poetrycoding.springframework.config.BeanDefinition;
+import com.github.poetrycoding.springframework.config.BeanReference;
+import com.github.poetrycoding.springframework.config.PropertyValue;
+import com.github.poetrycoding.springframework.config.PropertyValues;
 import com.github.poetrycoding.springframework.exception.BeansException;
 import com.github.poetrycoding.springframework.support.InstantiationStrategy;
 import com.github.poetrycoding.springframework.support.JdkSubclassingInstantiationStrategy;
@@ -23,12 +27,37 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Object singletonBeanInstance;
         try {
             singletonBeanInstance = createBeanInstance(beanName, bd, args);
+            //Bean属性填充
+            applyPropertyValues(beanName, singletonBeanInstance, bd);
         } catch (Exception e) {
             throw new BeansException("Failed to instantiate Bean object", e);
         }
         //注册到单例容器中
         registerSingleton(beanName, singletonBeanInstance);
         return singletonBeanInstance;
+    }
+
+    private void applyPropertyValues(String beanName, Object singletonBeanInstance, BeanDefinition bd) {
+        try {
+            PropertyValues propertyValues = bd.getPropertyValues();
+            for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+                //获取属性Name
+                String propertyValueName = propertyValue.getName();
+                //获取属性Value
+                Object propertyValueValue = propertyValue.getValue();
+                if (propertyValueValue instanceof BeanReference) {
+                    // A 依赖 B，获取 B 的实例化
+                    BeanReference beanReference = (BeanReference) propertyValueValue;
+                    //提前触发引用对象创建
+                    propertyValueValue = getBean(beanReference.getBeanName());
+                }
+                //属性填充
+                BeanUtil.setFieldValue(singletonBeanInstance, propertyValueName, propertyValueValue);
+            }
+        } catch (Exception e) {
+            throw new BeansException("Error setting property values：" + beanName);
+        }
+
     }
 
     private Object createBeanInstance(String beanName, BeanDefinition bd, Object[] args) {

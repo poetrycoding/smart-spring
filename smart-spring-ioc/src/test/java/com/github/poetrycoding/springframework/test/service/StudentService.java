@@ -1,5 +1,7 @@
 package com.github.poetrycoding.springframework.test.service;
 
+import com.github.poetrycoding.springframework.test.dao.StudentDAO;
+
 /**
  * Description: 测试Service
  * <br/>
@@ -11,6 +13,7 @@ package com.github.poetrycoding.springframework.test.service;
 public class StudentService {
 
     private String name;
+    private StudentDAO studentDAO;
 
     public StudentService() {
     }
@@ -19,6 +22,10 @@ public class StudentService {
         this.name = name;
     }
 
+    public StudentService(String name, StudentDAO studentDAO) {
+        this.name = name;
+        this.studentDAO = studentDAO;
+    }
 
     public String getName() {
         return name;
@@ -32,6 +39,14 @@ public class StudentService {
      * 测试方法
      */
     public void study() {
-        System.out.println(getName() + "--StudentService.study======> study spring ioc....");
+        System.out.println("{" + studentDAO.queryById("10001") + "}--StudentService.study======> study spring ioc....[" + getName() + "]");
+    }
+
+    public StudentDAO getStudentDAO() {
+        return studentDAO;
+    }
+
+    public void setStudentDAO(StudentDAO studentDAO) {
+        this.studentDAO = studentDAO;
     }
 }

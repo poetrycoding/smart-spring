@@ -1,7 +1,11 @@
 package com.github.poetrycoding.springframework.test;
 
 import com.github.poetrycoding.springframework.config.BeanDefinition;
+import com.github.poetrycoding.springframework.config.BeanReference;
+import com.github.poetrycoding.springframework.config.PropertyValue;
+import com.github.poetrycoding.springframework.config.PropertyValues;
 import com.github.poetrycoding.springframework.factory.DefaultListableBeanFactory;
+import com.github.poetrycoding.springframework.test.dao.StudentDAO;
 import com.github.poetrycoding.springframework.test.service.StudentService;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
@@ -34,6 +38,25 @@ public class BeanApiTest {
         studentService2.study();
         System.out.println("studentService2.hashCode() = " + studentService2.hashCode());
 
+    }
+
+    @Test
+    public void testPropertyValue(){
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        //注册StudentDAO
+        beanFactory.registerBeanDefinition("studentDao",new BeanDefinition(StudentDAO.class));
+
+        //创建StudentService属性
+        PropertyValues propertyValues  = new PropertyValues();
+        //填充属性name
+        propertyValues.addPropertyValue(new PropertyValue("name","66666"));
+        //填充引用属性,
+        propertyValues.addPropertyValue(new PropertyValue("studentDAO",new BeanReference("studentDao")));
+        //注册StudentService
+        beanFactory.registerBeanDefinition("studentService",new BeanDefinition(StudentService.class, propertyValues));
+
+        StudentService studentService = (StudentService) beanFactory.getBean("studentService");
+        studentService.study();
     }
 
     @Test
