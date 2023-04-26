@@ -36,6 +36,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Class<?> beanClass = bd.getBeanClass();
         Constructor<?>[] declaredConstructors = beanClass.getDeclaredConstructors();
         for (Constructor<?> declaredConstructor : declaredConstructors) {
+            //对比构造函数长度是否一样来匹配指定的构造器，在Spring中会更复杂，会进行参数类型比较等，比较失败则会进行抛出异常
             if (null != args && declaredConstructor.getParameterTypes().length == args.length) {
                 constructorToUse = declaredConstructor;
                 break;
