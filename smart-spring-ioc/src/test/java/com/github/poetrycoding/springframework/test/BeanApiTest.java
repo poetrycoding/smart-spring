@@ -3,6 +3,8 @@ package com.github.poetrycoding.springframework.test;
 import com.github.poetrycoding.springframework.config.BeanDefinition;
 import com.github.poetrycoding.springframework.factory.DefaultListableBeanFactory;
 import com.github.poetrycoding.springframework.test.service.StudentService;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.NoOp;
 import org.junit.Test;
 
 /**
@@ -24,13 +26,32 @@ public class BeanApiTest {
         beanFactory.registerBeanDefinition("studyService", bd);
 
         //从工厂获取Bean实例
-        StudentService studentService1 = (StudentService) beanFactory.getBean("studyService");
+        StudentService studentService1 = (StudentService) beanFactory.getBean("studyService","张三");
         studentService1.study();
         System.out.println("studentService1.hashCode() = " + studentService1.hashCode());
 
         StudentService studentService2 = (StudentService) beanFactory.getBean("studyService");
         studentService2.study();
         System.out.println("studentService2.hashCode() = " + studentService2.hashCode());
+
+    }
+
+    @Test
+    public void testCglibCreateObject(){
+
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(StudentService.class);
+        enhancer.setCallback(new NoOp() {
+            @Override
+            public int hashCode() {
+                return super.hashCode();
+            }
+        });
+        Object studyObj = enhancer.create(new Class[]{String.class}, new Object[]{"jack"});
+        System.out.println(studyObj);
+
+        Object obj = enhancer.create();
+        System.out.println(obj);
 
     }
 }

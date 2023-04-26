@@ -10,10 +10,28 @@ package com.github.poetrycoding.springframework.test.service;
  */
 public class StudentService {
 
+    private String name;
+
+    public StudentService() {
+    }
+
+    public StudentService(String name) {
+        this.name = name;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * 测试方法
      */
     public void study() {
-        System.out.println("StudentService.study======> study spring ioc....");
+        System.out.println(getName() + "--StudentService.study======> study spring ioc....");
     }
 }

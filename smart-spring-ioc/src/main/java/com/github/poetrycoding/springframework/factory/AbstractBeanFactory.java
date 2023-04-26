@@ -19,15 +19,25 @@ import java.util.Objects;
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
     @Override
     public Object getBean(String beanName) throws BeansException {
+        return doGetBean(beanName, null);
+    }
+
+    @Override
+    public Object getBean(String beanName, Object... args) throws BeansException {
+        return doGetBean(beanName,args);
+    }
+
+
+    public <T> T doGetBean(final String beanName, Object[] args) {
         //从单例注册表一级缓存容器中获取实例对象
         Object singleton = getSingleton(beanName);
         if (Objects.nonNull(singleton)) {
-            return singleton;
+            return (T) singleton;
         }
         //获取BeanDefinition对象
         BeanDefinition beanDefinition = getBeanDefinition(beanName);
         //根据BeanDefinition创建实例
-        return createBean(beanName, beanDefinition);
+        return (T) createBean(beanName, beanDefinition, args);
     }
 
     /**
@@ -45,10 +55,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
      *
      * @param beanName Bean名称
      * @param bd       BeanDefinition
+     * @param args     参数
      * @return 实例对象
      * @throws BeansException
      */
-    protected abstract Object createBean(String beanName, BeanDefinition bd)
+    protected abstract Object createBean(String beanName, BeanDefinition bd, Object[] args)
             throws BeansException;
 
 }
