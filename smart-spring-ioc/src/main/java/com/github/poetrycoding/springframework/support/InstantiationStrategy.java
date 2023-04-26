@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
  * @author laiql
  * @date 2023/4/26 20:57
  */
-public interface InstanceStrategy {
+public interface InstantiationStrategy {
     /**
      * 实例化策略
      *

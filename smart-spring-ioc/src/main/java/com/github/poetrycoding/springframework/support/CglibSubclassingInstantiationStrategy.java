@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author laiql
  * @date 2023/4/26 21:00
  */
-public class CglibSubclassingInstanceStrategy implements InstanceStrategy {
+public class CglibSubclassingInstantiationStrategy implements InstantiationStrategy {
     @Override
     public Object instance(String beanName, BeanDefinition bd, Constructor constructor, Object[] args) {
         Enhancer enhancer = new Enhancer();

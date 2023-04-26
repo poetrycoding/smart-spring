@@ -2,7 +2,7 @@ package com.github.poetrycoding.springframework.factory;
 
 import com.github.poetrycoding.springframework.config.BeanDefinition;
 import com.github.poetrycoding.springframework.exception.BeansException;
-import com.github.poetrycoding.springframework.support.InstanceStrategy;
+import com.github.poetrycoding.springframework.support.InstantiationStrategy;
 import com.github.poetrycoding.springframework.support.JdkSubclassingInstantiationStrategy;
 
 import java.lang.reflect.Constructor;
@@ -16,7 +16,7 @@ import java.lang.reflect.Constructor;
  * @date 2023/4/26 10:25
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
-    private InstanceStrategy instanceStrategy = new JdkSubclassingInstantiationStrategy();
+    private InstantiationStrategy instanceStrategy = new JdkSubclassingInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition bd, Object[] args) throws BeansException {
@@ -46,11 +46,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return getInstanceStrategy().instance(beanName, bd, constructorToUse, args);
     }
 
-    public InstanceStrategy getInstanceStrategy() {
+    public InstantiationStrategy getInstanceStrategy() {
         return instanceStrategy;
     }
 
-    public void setInstanceStrategy(InstanceStrategy instanceStrategy) {
+    public void setInstanceStrategy(InstantiationStrategy instanceStrategy) {
         this.instanceStrategy = instanceStrategy;
     }
 }

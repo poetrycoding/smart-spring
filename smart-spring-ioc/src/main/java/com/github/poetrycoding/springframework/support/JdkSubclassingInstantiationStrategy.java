@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author laiql
  * @date 2023/4/26 21:00
  */
-public class JdkSubclassingInstantiationStrategy implements InstanceStrategy {
+public class JdkSubclassingInstantiationStrategy implements InstantiationStrategy {
     @Override
     public Object instance(String beanName, BeanDefinition bd, Constructor constructor, Object[] args) {
         Class beanClass = bd.getBeanClass();
