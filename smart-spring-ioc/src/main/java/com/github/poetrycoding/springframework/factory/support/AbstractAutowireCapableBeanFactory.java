@@ -1,13 +1,11 @@
-package com.github.poetrycoding.springframework.factory;
+package com.github.poetrycoding.springframework.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.github.poetrycoding.springframework.config.BeanDefinition;
-import com.github.poetrycoding.springframework.config.BeanReference;
-import com.github.poetrycoding.springframework.config.PropertyValue;
-import com.github.poetrycoding.springframework.config.PropertyValues;
+import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
+import com.github.poetrycoding.springframework.factory.config.BeanReference;
+import com.github.poetrycoding.springframework.property.PropertyValue;
+import com.github.poetrycoding.springframework.property.PropertyValues;
 import com.github.poetrycoding.springframework.exception.BeansException;
-import com.github.poetrycoding.springframework.support.InstantiationStrategy;
-import com.github.poetrycoding.springframework.support.JdkSubclassingInstantiationStrategy;
 
 import java.lang.reflect.Constructor;
 

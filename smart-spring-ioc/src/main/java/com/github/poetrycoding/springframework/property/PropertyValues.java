@@ -1,4 +1,4 @@
-package com.github.poetrycoding.springframework.config;
+package com.github.poetrycoding.springframework.property;
 
 import java.util.ArrayList;
 import java.util.List;

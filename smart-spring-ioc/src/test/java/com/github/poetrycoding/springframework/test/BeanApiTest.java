@@ -1,15 +1,23 @@
 package com.github.poetrycoding.springframework.test;
 
-import com.github.poetrycoding.springframework.config.BeanDefinition;
-import com.github.poetrycoding.springframework.config.BeanReference;
-import com.github.poetrycoding.springframework.config.PropertyValue;
-import com.github.poetrycoding.springframework.config.PropertyValues;
-import com.github.poetrycoding.springframework.factory.DefaultListableBeanFactory;
+import cn.hutool.core.io.IoUtil;
+import com.github.poetrycoding.springframework.core.io.DefaultResourceLoader;
+import com.github.poetrycoding.springframework.core.io.Resource;
+import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
+import com.github.poetrycoding.springframework.factory.config.BeanReference;
+import com.github.poetrycoding.springframework.factory.xml.XmlBeanDefinitionReader;
+import com.github.poetrycoding.springframework.property.PropertyValue;
+import com.github.poetrycoding.springframework.property.PropertyValues;
+import com.github.poetrycoding.springframework.factory.support.DefaultListableBeanFactory;
 import com.github.poetrycoding.springframework.test.dao.StudentDAO;
 import com.github.poetrycoding.springframework.test.service.StudentService;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Description: Bean注册定义测试
@@ -30,7 +38,7 @@ public class BeanApiTest {
         beanFactory.registerBeanDefinition("studyService", bd);
 
         //从工厂获取Bean实例
-        StudentService studentService1 = (StudentService) beanFactory.getBean("studyService","张三");
+        StudentService studentService1 = (StudentService) beanFactory.getBean("studyService", "张三");
         studentService1.study();
         System.out.println("studentService1.hashCode() = " + studentService1.hashCode());
 
@@ -40,27 +48,62 @@ public class BeanApiTest {
 
     }
 
+    private DefaultResourceLoader defaultResourceLoader;
+
+    @Before
+    public void init() {
+        defaultResourceLoader = new DefaultResourceLoader();
+    }
+
     @Test
-    public void testPropertyValue(){
+    public void testClassPath() throws IOException {
+        Resource resource = defaultResourceLoader.getResource("classpath:important.properties");
+        InputStream inputStream = resource.getInputStream();
+        String string = IoUtil.readUtf8(inputStream);
+        System.out.println("string = " + string);
+    }
+
+    @Test
+    public void testFile() throws IOException {
+        Resource resource = defaultResourceLoader.getResource("src/test/resources/important.properties");
+        InputStream inputStream = resource.getInputStream();
+        String content = IoUtil.readUtf8(inputStream);
+        System.out.println(content);
+    }
+
+    @Test
+    public void testSpringXml() {
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+        XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+        beanDefinitionReader.loadBeanDefinitions("classpath:spring.xml");
+
+        StudentService studentService = beanFactory.getBean("studentService", StudentService.class);
+        studentService.study();
+
+    }
+
+    @Test
+    public void testPropertyValue() {
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
         //注册StudentDAO
-        beanFactory.registerBeanDefinition("studentDao",new BeanDefinition(StudentDAO.class));
+        beanFactory.registerBeanDefinition("studentDao", new BeanDefinition(StudentDAO.class));
 
         //创建StudentService属性
-        PropertyValues propertyValues  = new PropertyValues();
+        PropertyValues propertyValues = new PropertyValues();
         //填充属性name
-        propertyValues.addPropertyValue(new PropertyValue("name","66666"));
+        propertyValues.addPropertyValue(new PropertyValue("name", "66666"));
         //填充引用属性,
-        propertyValues.addPropertyValue(new PropertyValue("studentDAO",new BeanReference("studentDao")));
+        propertyValues.addPropertyValue(new PropertyValue("studentDAO", new BeanReference("studentDao")));
         //注册StudentService
-        beanFactory.registerBeanDefinition("studentService",new BeanDefinition(StudentService.class, propertyValues));
+        beanFactory.registerBeanDefinition("studentService", new BeanDefinition(StudentService.class, propertyValues));
 
         StudentService studentService = (StudentService) beanFactory.getBean("studentService");
         studentService.study();
     }
 
     @Test
-    public void testCglibCreateObject(){
+    public void testCglibCreateObject() {
 
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(StudentService.class);

@@ -1,4 +1,4 @@
-package com.github.poetrycoding.springframework.config;
+package com.github.poetrycoding.springframework.property;
 
 /**
  * Description: 属性对象定义

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="studentDAO" class="com.github.poetrycoding.springframework.test.dao.StudentDAO"/>
+
+    <bean id="studentService" class="com.github.poetrycoding.springframework.test.service.StudentService">
+        <property name="name" value="10001"/>
+        <property name="studentDAO" ref="studentDAO"/>
+    </bean>
+
+</beans>

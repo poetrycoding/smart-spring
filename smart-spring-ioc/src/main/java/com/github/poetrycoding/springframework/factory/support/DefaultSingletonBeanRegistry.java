@@ -1,7 +1,7 @@
-package com.github.poetrycoding.springframework.support;
+package com.github.poetrycoding.springframework.factory.support;
 
 import cn.hutool.core.lang.Assert;
-import com.github.poetrycoding.springframework.config.SingletonBeanRegistry;
+import com.github.poetrycoding.springframework.factory.config.SingletonBeanRegistry;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

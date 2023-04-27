@@ -1,4 +1,4 @@
-package com.github.poetrycoding.springframework.config;
+package com.github.poetrycoding.springframework.factory.config;
 
 /**
  * Description: 单利bean注册表

@@ -1,4 +1,6 @@
-package com.github.poetrycoding.springframework.config;
+package com.github.poetrycoding.springframework.factory.config;
+
+import com.github.poetrycoding.springframework.property.PropertyValues;
 
 /**
  * Description: Bean信息对象定义

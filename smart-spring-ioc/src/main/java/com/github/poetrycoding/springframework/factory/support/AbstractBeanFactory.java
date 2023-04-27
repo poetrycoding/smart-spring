@@ -1,8 +1,8 @@
-package com.github.poetrycoding.springframework.factory;
+package com.github.poetrycoding.springframework.factory.support;
 
-import com.github.poetrycoding.springframework.config.BeanDefinition;
+import com.github.poetrycoding.springframework.factory.BeanFactory;
+import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.exception.BeansException;
-import com.github.poetrycoding.springframework.support.DefaultSingletonBeanRegistry;
 
 import java.util.Objects;
 
@@ -27,6 +27,10 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return doGetBean(beanName,args);
     }
 
+    @Override
+    public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+        return (T) getBean(name);
+    }
 
     public <T> T doGetBean(final String beanName, Object[] args) {
         //从单例注册表一级缓存容器中获取实例对象

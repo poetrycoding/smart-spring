@@ -1,6 +1,6 @@
-package com.github.poetrycoding.springframework.support;
+package com.github.poetrycoding.springframework.factory.support;
 
-import com.github.poetrycoding.springframework.config.BeanDefinition;
+import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.NoOp;
 
