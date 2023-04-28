@@ -1,7 +1,9 @@
 package com.github.poetrycoding.springframework.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.github.poetrycoding.springframework.factory.config.AutowireCapableBeanFactory;
 import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
+import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
 import com.github.poetrycoding.springframework.factory.config.BeanReference;
 import com.github.poetrycoding.springframework.property.PropertyValue;
 import com.github.poetrycoding.springframework.property.PropertyValues;
@@ -17,22 +19,47 @@ import java.lang.reflect.Constructor;
  * @author laiql
  * @date 2023/4/26 10:25
  */
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory {
+public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
     private InstantiationStrategy instanceStrategy = new JdkSubclassingInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition bd, Object[] args) throws BeansException {
-        Object singletonBeanInstance;
+        Object bean;
         try {
-            singletonBeanInstance = createBeanInstance(beanName, bd, args);
+            bean = createBeanInstance(beanName, bd, args);
             //Bean属性填充
-            applyPropertyValues(beanName, singletonBeanInstance, bd);
+            applyPropertyValues(beanName, bean, bd);
+            //执行Bean的初始化方法和BeanPostProcessor的前置和后置处理方法
+            bean = initializeBean(bean, beanName, bd);
         } catch (Exception e) {
             throw new BeansException("Failed to instantiate Bean object", e);
         }
         //注册到单例容器中
-        registerSingleton(beanName, singletonBeanInstance);
-        return singletonBeanInstance;
+        registerSingleton(beanName, bean);
+        return bean;
+    }
+
+    /**
+     * 执行Bean的初始化方法
+     *
+     * @param bean     bean对象
+     * @param beanName 名称
+     * @param bd       bean定义对象
+     * @return 实例对象
+     */
+    private Object initializeBean(Object bean, String beanName, BeanDefinition bd) {
+        // 1. 执行 BeanPostProcessor Before 处理
+        Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
+
+        // TODO 执行一些初始化方法 spring中的init 等
+        invokeInitMethods(beanName, wrappedBean, bd);
+        // 2. 执行 BeanPostProcessor After 处理
+        wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+        return wrappedBean;
+    }
+
+    private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition bd) {
+
     }
 
     private void applyPropertyValues(String beanName, Object singletonBeanInstance, BeanDefinition bd) {
@@ -73,6 +100,34 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return getInstanceStrategy().instance(beanName, bd, constructorToUse, args);
     }
 
+    @Override
+    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
+        //bean初始化后 都会调用 注册的BeanPostProcessor的postProcessorAfterInitialization方法进行处理
+        Object result = existingBean;
+        for (BeanPostProcessor processor : getBeanPostProcessors()) {
+            Object current = processor.postProcessAfterInitialization(result, beanName);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
+    @Override
+    public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws BeansException {
+        //bean初始化前 都会调用 注册的BeanPostProcessor的postProcessorBeforInitialization方法进行处理
+        Object result = existingBean;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            Object current = beanPostProcessor.postProcessBeforeInitialization(result, beanName);
+            if (current == null) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
     public InstantiationStrategy getInstanceStrategy() {
         return instanceStrategy;
     }
@@ -80,4 +135,5 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     public void setInstanceStrategy(InstantiationStrategy instanceStrategy) {
         this.instanceStrategy = instanceStrategy;
     }
+
 }

@@ -4,7 +4,9 @@ import com.github.poetrycoding.springframework.factory.ConfigurableListableBeanF
 import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.exception.BeanDefinitionStoreException;
 import com.github.poetrycoding.springframework.exception.BeansException;
+import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +32,23 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             throw new BeansException("No bean named '" + beanName + "' not found ");
         }
         return bd;
+    }
+
+    @Override
+    public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
+        Map<String, T> result = new HashMap<>(16);
+        beanDefinitionMap.forEach((beanName, beanDefinition) -> {
+            Class beanClass = beanDefinition.getBeanClass();
+            if (type.isAssignableFrom(beanClass)) {
+                result.put(beanName, (T) getBean(beanName));
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public void preInstantiateSingletons() throws BeansException {
+        beanDefinitionMap.keySet().forEach(this::getBean);
     }
 
     @Override

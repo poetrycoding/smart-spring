@@ -3,7 +3,11 @@ package com.github.poetrycoding.springframework.factory.support;
 import com.github.poetrycoding.springframework.factory.BeanFactory;
 import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.exception.BeansException;
+import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
+import com.github.poetrycoding.springframework.factory.config.ConfigurableBeanFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,7 +20,12 @@ import java.util.Objects;
  * @author laiql
  * @date 2023/4/26 10:18
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+    /**
+     * BeanPostProcessors to apply in createBean
+     */
+    private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
+
     @Override
     public Object getBean(String beanName) throws BeansException {
         return doGetBean(beanName, null);
@@ -24,7 +33,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
     @Override
     public Object getBean(String beanName, Object... args) throws BeansException {
-        return doGetBean(beanName,args);
+        return doGetBean(beanName, args);
     }
 
     @Override
@@ -66,4 +75,21 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     protected abstract Object createBean(String beanName, BeanDefinition bd, Object[] args)
             throws BeansException;
 
+    @Override
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        synchronized (this.beanPostProcessors) {
+            this.beanPostProcessors.remove(beanPostProcessor);
+            this.beanPostProcessors.add(beanPostProcessor);
+        }
+    }
+
+
+    /**
+     * 提供子类获取所有扩展处理器列表
+     *
+     * @return List<BeanPostProcessor>
+     */
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return beanPostProcessors;
+    }
 }

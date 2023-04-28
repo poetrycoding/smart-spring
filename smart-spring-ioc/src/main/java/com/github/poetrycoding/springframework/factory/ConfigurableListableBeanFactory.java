@@ -3,6 +3,7 @@ package com.github.poetrycoding.springframework.factory;
 import com.github.poetrycoding.springframework.exception.BeansException;
 import com.github.poetrycoding.springframework.factory.config.AutowireCapableBeanFactory;
 import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
+import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
 import com.github.poetrycoding.springframework.factory.config.ConfigurableBeanFactory;
 
 /**
@@ -18,4 +19,14 @@ import com.github.poetrycoding.springframework.factory.config.ConfigurableBeanFa
  */
 public interface ConfigurableListableBeanFactory extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
     BeanDefinition getBeanDefinition(String beanName) throws BeansException;
+
+    /**
+     * 提前实例化Bean对象
+     *
+     * @throws BeansException
+     */
+    void preInstantiateSingletons() throws BeansException;
+
+    @Override
+    void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 }
