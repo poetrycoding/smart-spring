@@ -21,10 +21,7 @@ public class ContextApiTest {
     @Test
     public void contextTest() {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring.xml");
-
-        DefaultListableBeanFactory beanFactory = context.getBeanFactory();
-        MyBeanFactoryPostProcessor beanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
-        beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+        context.registerShutdownHook();
 
         StudentService studentService = context.getBean("studentService", StudentService.class);
         studentService.study();
@@ -52,5 +49,10 @@ public class ContextApiTest {
         String result = studentService.getName();
         System.out.println("测试结果：" + result);
         studentService.study();
+    }
+
+    @Test
+    public void test_hook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("close！")));
     }
 }

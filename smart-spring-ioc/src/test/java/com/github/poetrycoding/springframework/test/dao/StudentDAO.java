@@ -12,14 +12,21 @@ import java.util.Map;
  * @date 2023/4/26 22:58
  */
 public class StudentDAO {
-    private static Map<String, String> data = new HashMap<>();
+    private static Map<String, String> hashMap = new HashMap<>();
 
-    static {
-        data.put("10001", "jack");
-        data.put("10002", "danny");
+    public void initDataMethod(){
+        System.out.println("执行：init-method");
+        hashMap.put("10001", "jack");
+        hashMap.put("10002", "八杯水");
+        hashMap.put("10003", "阿毛");
+    }
+
+    public void destroyDataMethod(){
+        System.out.println("执行：destroy-method");
+        hashMap.clear();
     }
 
     public String queryById(String id) {
-        return data.get(id);
+        return hashMap.get(id);
     }
 }

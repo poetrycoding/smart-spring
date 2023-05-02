@@ -30,3 +30,9 @@
 #### 代码结构图
 
 ![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-context-refresh.png)
+
+### 目标：实现Spring的应用上下文初始化和注销扩展实现
++ 代码分支：feat-factory-conext-init-destroy
+#### 代码结构图
+
+![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-factory-destroy.png)

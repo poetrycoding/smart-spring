@@ -1,5 +1,7 @@
 package com.github.poetrycoding.springframework.test.service;
 
+import com.github.poetrycoding.springframework.factory.DisposableBean;
+import com.github.poetrycoding.springframework.factory.InitializingBean;
 import com.github.poetrycoding.springframework.test.dao.StudentDAO;
 
 /**
@@ -10,7 +12,7 @@ import com.github.poetrycoding.springframework.test.dao.StudentDAO;
  * @author laiql
  * @date 2023/4/26 10:40
  */
-public class StudentService {
+public class StudentService implements InitializingBean, DisposableBean {
 
     private String name;
     private StudentDAO studentDAO;
@@ -48,5 +50,15 @@ public class StudentService {
 
     public void setStudentDAO(StudentDAO studentDAO) {
         this.studentDAO = studentDAO;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println("StudentService.destroy");
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("StudentService.afterPropertiesSet");
     }
 }

@@ -13,7 +13,7 @@ import com.github.poetrycoding.springframework.exception.BeansException;
  * @author laiql
  * @date 2023/4/28 21:21
  */
-public interface ConfigurableApplicationContext extends ApplicationContext{
+public interface ConfigurableApplicationContext extends ApplicationContext {
 
     /**
      * 刷新容器
@@ -21,4 +21,14 @@ public interface ConfigurableApplicationContext extends ApplicationContext{
      * @throws BeansException
      */
     void refresh() throws BeansException;
+
+    /**
+     * 注册钩子函数
+     */
+    void registerShutdownHook();
+
+    /**
+     * 关闭容器方法
+     */
+    void close();
 }

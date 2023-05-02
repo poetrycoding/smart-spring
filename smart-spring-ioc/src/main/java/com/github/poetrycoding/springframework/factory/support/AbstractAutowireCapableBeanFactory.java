@@ -1,6 +1,9 @@
 package com.github.poetrycoding.springframework.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import com.github.poetrycoding.springframework.factory.DisposableBean;
+import com.github.poetrycoding.springframework.factory.InitializingBean;
 import com.github.poetrycoding.springframework.factory.config.AutowireCapableBeanFactory;
 import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
@@ -10,6 +13,7 @@ import com.github.poetrycoding.springframework.property.PropertyValues;
 import com.github.poetrycoding.springframework.exception.BeansException;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 /**
  * Description: 综合AbstractBeanFacto1y 并对接口AutowireCapableBeanFactory 进行实现。
@@ -34,9 +38,25 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         } catch (Exception e) {
             throw new BeansException("Failed to instantiate Bean object", e);
         }
+        // 注册实现了 DisposableBean 接口的 Bean 对象
+        registerDisposableBeanIfNecessary(beanName, bean, bd);
+
         //注册到单例容器中
         registerSingleton(beanName, bean);
         return bean;
+    }
+
+    /**
+     * 注册实现了 DisposableBean 接口的 Bean 对象
+     *
+     * @param beanName bean名称
+     * @param bean     bean对象
+     * @param bd       bean定义信息
+     */
+    private void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition bd) {
+        if (bean instanceof DisposableBean || StrUtil.isNotEmpty(bd.getDestroyMethodName())) {
+            registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, bd));
+        }
     }
 
     /**
@@ -47,19 +67,31 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @param bd       bean定义对象
      * @return 实例对象
      */
-    private Object initializeBean(Object bean, String beanName, BeanDefinition bd) {
+    private Object initializeBean(Object bean, String beanName, BeanDefinition bd) throws Exception {
         // 1. 执行 BeanPostProcessor Before 处理
         Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
 
-        // TODO 执行一些初始化方法 spring中的init 等
+        // 2. 执行初始化化方法
         invokeInitMethods(beanName, wrappedBean, bd);
-        // 2. 执行 BeanPostProcessor After 处理
+        // 3. 执行 BeanPostProcessor After 处理
         wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
         return wrappedBean;
     }
 
-    private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition bd) {
-
+    private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition bd) throws Exception {
+        // 1. 检查bean是否实现了initializingBean
+        if (wrappedBean instanceof InitializingBean) {
+            ((InitializingBean) wrappedBean).afterPropertiesSet();
+        }
+        // 2. 注解配置 init-method {判断是为了避免二次执行初始化}
+        String initMethodName = bd.getInitMethodName();
+        if (StrUtil.isNotEmpty(initMethodName) && !(wrappedBean instanceof InitializingBean)) {
+            Method initMethod = bd.getBeanClass().getMethod(initMethodName);
+            if (null == initMethod) {
+                throw new BeansException("Could not find an init method named '" + initMethodName + "' on bean with name '" + beanName + "'");
+            }
+            initMethod.invoke(wrappedBean);
+        }
     }
 
     private void applyPropertyValues(String beanName, Object singletonBeanInstance, BeanDefinition bd) {
