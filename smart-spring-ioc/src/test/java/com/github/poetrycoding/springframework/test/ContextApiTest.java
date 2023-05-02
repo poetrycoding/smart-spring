@@ -22,6 +22,10 @@ public class ContextApiTest {
     public void contextTest() {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring.xml");
 
+        DefaultListableBeanFactory beanFactory = context.getBeanFactory();
+        MyBeanFactoryPostProcessor beanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
+        beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+
         StudentService studentService = context.getBean("studentService", StudentService.class);
         studentService.study();
     }

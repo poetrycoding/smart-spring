@@ -8,4 +8,7 @@
         <property name="studentDAO" ref="studentDAO"/>
     </bean>
 
+    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanFactoryPostProcessor"/>
+    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanPostProcessor"/>
+
 </beans>

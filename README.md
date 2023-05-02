@@ -24,3 +24,9 @@
 #### 代码结构图
 
 ![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-instance-resource.drawio.png)
+
+### 目标：实现Spring的应用上下文
++ 代码分支：feat-factory-context
+#### 代码结构图
+
+![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-context-refresh.png)
