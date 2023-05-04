@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
  * @date 2023/4/26 10:25
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
-    private InstantiationStrategy instanceStrategy = new JdkSubclassingInstantiationStrategy();
+    private InstantiationStrategy instanceStrategy = new CglibSubclassingInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition bd, Object[] args) throws BeansException {
@@ -40,8 +40,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         // 注册实现了 DisposableBean 接口的 Bean 对象
         registerDisposableBeanIfNecessary(beanName, bean, bd);
 
-        //注册到单例容器中
-        registerSingleton(beanName, bean);
+        //判断是否单例
+        if (bd.isSingleton()) {
+            //注册到单例容器中
+            registerSingleton(beanName, bean);
+        }
         return bean;
     }
 
@@ -53,6 +56,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @param bd       bean定义信息
      */
     private void registerDisposableBeanIfNecessary(String beanName, Object bean, BeanDefinition bd) {
+        //判断 ConfigurableBeanFactory.SCOPE_SINGLETON 单例生命周期不执行销毁操作
+        if (!bd.isSingleton()) {
+            return;
+        }
         if (bean instanceof DisposableBean || StrUtil.isNotEmpty(bd.getDestroyMethodName())) {
             registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, bd));
         }

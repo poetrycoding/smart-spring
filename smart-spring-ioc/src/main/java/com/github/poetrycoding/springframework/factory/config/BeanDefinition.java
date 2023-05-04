@@ -12,6 +12,16 @@ import com.github.poetrycoding.springframework.property.PropertyValues;
  */
 public class BeanDefinition {
     /**
+     * 单例
+     */
+    String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
+
+    /**
+     * 原型模式
+     */
+    String SCOPE_PROTOTYPE = ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+    /**
      * beanClass对象定义
      */
     private Class beanClass;
@@ -27,14 +37,35 @@ public class BeanDefinition {
      */
     private String destroyMethodName;
 
+    /**
+     * 生命周期默认为单例模式
+     */
+    private String scope = SCOPE_SINGLETON;
+
+    /**
+     * 单例
+     */
+    private boolean singleton = true;
+
+    /**
+     * 原型
+     */
+    private boolean prototype = false;
+
+
+    public void setScope(String scope) {
+        this.scope = scope;
+        this.singleton = SCOPE_SINGLETON.equals(scope);
+        this.prototype = SCOPE_PROTOTYPE.equals(scope);
+    }
+
     public BeanDefinition(Class beanClass, PropertyValues propertyValues) {
         this.beanClass = beanClass;
-        this.propertyValues = propertyValues;
+        this.propertyValues = propertyValues != null ? propertyValues : new PropertyValues();
     }
 
     public BeanDefinition(Class beanClass) {
-        this.beanClass = beanClass;
-        this.propertyValues = new PropertyValues();
+        this(beanClass, null);
     }
 
     public Class getBeanClass() {
@@ -67,5 +98,21 @@ public class BeanDefinition {
 
     public void setPropertyValues(PropertyValues propertyValues) {
         this.propertyValues = propertyValues;
+    }
+
+    public boolean isSingleton() {
+        return singleton;
+    }
+
+    public void setSingleton(boolean singleton) {
+        this.singleton = singleton;
+    }
+
+    public boolean isPrototype() {
+        return prototype;
+    }
+
+    public void setPrototype(boolean prototype) {
+        this.prototype = prototype;
     }
 }

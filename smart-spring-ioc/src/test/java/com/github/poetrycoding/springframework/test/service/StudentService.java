@@ -3,6 +3,7 @@ package com.github.poetrycoding.springframework.test.service;
 import com.github.poetrycoding.springframework.context.ApplicationContext;
 import com.github.poetrycoding.springframework.exception.BeansException;
 import com.github.poetrycoding.springframework.factory.*;
+import com.github.poetrycoding.springframework.test.dao.IStudentDAO;
 import com.github.poetrycoding.springframework.test.dao.StudentDAO;
 
 /**
@@ -20,7 +21,7 @@ public class StudentService implements InitializingBean, DisposableBean, Applica
 
 
     private String name;
-    private StudentDAO studentDAO;
+    private IStudentDAO studentDAO;
 
     public StudentService() {
     }
@@ -29,7 +30,7 @@ public class StudentService implements InitializingBean, DisposableBean, Applica
         this.name = name;
     }
 
-    public StudentService(String name, StudentDAO studentDAO) {
+    public StudentService(String name, IStudentDAO studentDAO) {
         this.name = name;
         this.studentDAO = studentDAO;
     }
@@ -46,14 +47,14 @@ public class StudentService implements InitializingBean, DisposableBean, Applica
      * 测试方法
      */
     public void study() {
-        System.out.println("{" + studentDAO.queryById("10001") + "}--StudentService.study======> study spring ioc....[" + getName() + "]");
+        System.out.println("{" + studentDAO.queryUserName("10001") + "}--StudentService.study======> study spring ioc....[" + getName() + "]");
     }
 
-    public StudentDAO getStudentDAO() {
+    public IStudentDAO getStudentDAO() {
         return studentDAO;
     }
 
-    public void setStudentDAO(StudentDAO studentDAO) {
+    public void setStudentDAO(IStudentDAO studentDAO) {
         this.studentDAO = studentDAO;
     }
 

@@ -3,12 +3,13 @@
 
     <bean id="studentDAO" class="com.github.poetrycoding.springframework.test.dao.StudentDAO" init-method="initDataMethod" destroy-method="destroyDataMethod"/>
 
-    <bean id="studentService" class="com.github.poetrycoding.springframework.test.service.StudentService">
+    <bean id="studentService" class="com.github.poetrycoding.springframework.test.service.StudentService" scope="prototype">
         <property name="name" value="10001"/>
-        <property name="studentDAO" ref="studentDAO"/>
+        <property name="studentDAO" ref="proxyStudentDao"/>
     </bean>
 
 <!--    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanFactoryPostProcessor"/>-->
 <!--    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanPostProcessor"/>-->
 
+    <bean id="proxyStudentDao" class="com.github.poetrycoding.springframework.test.proxy.ProxyBeanFactory"/>
 </beans>
