@@ -36,3 +36,9 @@
 #### 代码结构图
 
 ![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-factory-destroy.png)
+
+### 目标：实现Spring的Aware感知接口
++ 代码分支：feat-factory-aware
+#### 代码结构图
+
+![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-context-aware.drawio.png)
