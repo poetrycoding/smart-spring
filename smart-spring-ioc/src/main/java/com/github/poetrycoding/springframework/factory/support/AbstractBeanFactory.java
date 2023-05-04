@@ -1,10 +1,10 @@
 package com.github.poetrycoding.springframework.factory.support;
 
-import com.github.poetrycoding.springframework.factory.BeanFactory;
-import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.exception.BeansException;
+import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
 import com.github.poetrycoding.springframework.factory.config.ConfigurableBeanFactory;
+import com.github.poetrycoding.springframework.utils.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,9 @@ import java.util.Objects;
  * @date 2023/4/26 10:18
  */
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+    /** ClassLoader to resolve bean class names with, if necessary */
+    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+
     /**
      * BeanPostProcessors to apply in createBean
      */
@@ -91,5 +94,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
      */
     public List<BeanPostProcessor> getBeanPostProcessors() {
         return beanPostProcessors;
+    }
+
+    public ClassLoader getBeanClassLoader() {
+        return this.beanClassLoader;
     }
 }

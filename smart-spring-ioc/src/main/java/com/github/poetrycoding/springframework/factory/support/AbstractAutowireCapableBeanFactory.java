@@ -2,8 +2,7 @@ package com.github.poetrycoding.springframework.factory.support;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import com.github.poetrycoding.springframework.factory.DisposableBean;
-import com.github.poetrycoding.springframework.factory.InitializingBean;
+import com.github.poetrycoding.springframework.factory.*;
 import com.github.poetrycoding.springframework.factory.config.AutowireCapableBeanFactory;
 import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
@@ -68,6 +67,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @return 实例对象
      */
     private Object initializeBean(Object bean, String beanName, BeanDefinition bd) throws Exception {
+        //invoke Aware Methods
+        invokeAwareMethods(bean, beanName);
+
         // 1. 执行 BeanPostProcessor Before 处理
         Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
 
@@ -76,6 +78,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         // 3. 执行 BeanPostProcessor After 处理
         wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
         return wrappedBean;
+    }
+
+    private void invokeAwareMethods(Object bean, String beanName) {
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanFactoryAware) {
+                ((BeanFactoryAware) bean).setBeanFactory(this);
+            }
+            if (bean instanceof BeanClassLoaderAware) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(getBeanClassLoader());
+            }
+            if (bean instanceof BeanNameAware) {
+                ((BeanNameAware) bean).setBeanName(beanName);
+            }
+        }
     }
 
     private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition bd) throws Exception {

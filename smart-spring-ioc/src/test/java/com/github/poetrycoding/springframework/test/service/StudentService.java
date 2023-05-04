@@ -1,7 +1,8 @@
 package com.github.poetrycoding.springframework.test.service;
 
-import com.github.poetrycoding.springframework.factory.DisposableBean;
-import com.github.poetrycoding.springframework.factory.InitializingBean;
+import com.github.poetrycoding.springframework.context.ApplicationContext;
+import com.github.poetrycoding.springframework.exception.BeansException;
+import com.github.poetrycoding.springframework.factory.*;
 import com.github.poetrycoding.springframework.test.dao.StudentDAO;
 
 /**
@@ -12,7 +13,11 @@ import com.github.poetrycoding.springframework.test.dao.StudentDAO;
  * @author laiql
  * @date 2023/4/26 10:40
  */
-public class StudentService implements InitializingBean, DisposableBean {
+public class StudentService implements InitializingBean, DisposableBean, ApplicationContextAware, BeanFactoryAware, BeanNameAware, BeanClassLoaderAware {
+
+    private ApplicationContext applicationContext;
+    private BeanFactory beanFactory;
+
 
     private String name;
     private StudentDAO studentDAO;
@@ -60,5 +65,27 @@ public class StudentService implements InitializingBean, DisposableBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         System.out.println("StudentService.afterPropertiesSet");
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        System.out.println("context = " + applicationContext);
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        System.out.println("classLoader = " + classLoader);
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+        System.out.println("beanFactory = " + beanFactory);
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("name = " + name);
     }
 }
