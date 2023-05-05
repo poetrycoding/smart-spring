@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
  * @date 2023/4/26 10:25
  */
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
-    private InstantiationStrategy instanceStrategy = new CglibSubclassingInstantiationStrategy();
+    private InstantiationStrategy instanceStrategy = new JdkSubclassingInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition bd, Object[] args) throws BeansException {

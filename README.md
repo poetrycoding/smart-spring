@@ -42,3 +42,9 @@
 #### 代码结构图
 
 ![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Bean-context-aware.drawio.png)
+
+### 目标：实现Spring的FactoryBean和作用域
++ 代码分支：feat-factory-bean
+#### 代码结构图
+
+![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Factory-Bean.png)
