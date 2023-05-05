@@ -1,7 +1,8 @@
-package com.github.poetrycoding.springframework.factory;
+package com.github.poetrycoding.springframework.context;
 
 import com.github.poetrycoding.springframework.context.ApplicationContext;
 import com.github.poetrycoding.springframework.exception.BeansException;
+import com.github.poetrycoding.springframework.factory.Aware;
 
 /**
  * Description: 应用程序上下文感知接口

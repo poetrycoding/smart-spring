@@ -1,5 +1,6 @@
 package com.github.poetrycoding.springframework.context;
 
+import com.github.poetrycoding.springframework.core.io.ResourceLoader;
 import com.github.poetrycoding.springframework.factory.ListableBeanFactory;
 
 /**
@@ -13,5 +14,5 @@ import com.github.poetrycoding.springframework.factory.ListableBeanFactory;
  * @author laiql
  * @date 2023/4/28 21:21
  */
-public interface ApplicationContext extends ListableBeanFactory {
+public interface ApplicationContext extends ListableBeanFactory, ResourceLoader, ApplicationEventPublisher {
 }

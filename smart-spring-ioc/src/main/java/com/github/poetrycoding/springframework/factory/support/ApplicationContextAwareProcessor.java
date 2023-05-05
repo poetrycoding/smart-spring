@@ -2,7 +2,7 @@ package com.github.poetrycoding.springframework.factory.support;
 
 import com.github.poetrycoding.springframework.context.ApplicationContext;
 import com.github.poetrycoding.springframework.exception.BeansException;
-import com.github.poetrycoding.springframework.factory.ApplicationContextAware;
+import com.github.poetrycoding.springframework.context.ApplicationContextAware;
 import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
 
 /**

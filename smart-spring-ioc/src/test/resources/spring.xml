@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean id="studentDAO" class="com.github.poetrycoding.springframework.test.dao.StudentDAO" init-method="initDataMethod" destroy-method="destroyDataMethod"/>
+    <!--    <bean id="studentDAO" class="com.github.poetrycoding.springframework.test.dao.StudentDAO" init-method="initDataMethod" destroy-method="destroyDataMethod"/>-->
 
-    <bean id="studentService" class="com.github.poetrycoding.springframework.test.service.StudentService" scope="prototype">
-        <property name="name" value="10001"/>
-        <property name="studentDAO" ref="proxyStudentDao"/>
-    </bean>
+    <!--    <bean id="studentService" class="com.github.poetrycoding.springframework.test.service.StudentService" scope="prototype">-->
+    <!--        <property name="name" value="10001"/>-->
+    <!--        <property name="studentDAO" ref="proxyStudentDao"/>-->
+    <!--    </bean>-->
 
-<!--    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanFactoryPostProcessor"/>-->
-<!--    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanPostProcessor"/>-->
+    <!--&lt;!&ndash;    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanFactoryPostProcessor"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;    <bean class="com.github.poetrycoding.springframework.test.processor.MyBeanPostProcessor"/>&ndash;&gt;-->
 
-    <bean id="proxyStudentDao" class="com.github.poetrycoding.springframework.test.proxy.ProxyBeanFactory"/>
+    <!--    <bean id="proxyStudentDao" class="com.github.poetrycoding.springframework.test.proxy.ProxyBeanFactory"/>-->
+    <!--    -->
+
+
+    <bean class="com.github.poetrycoding.springframework.test.event.ContextRefreshedEventListener"/>
+
+    <bean class="com.github.poetrycoding.springframework.test.event.CustomEventListener"/>
+
+    <bean class="com.github.poetrycoding.springframework.test.event.ContextClosedEventListener"/>
+
+
 </beans>
