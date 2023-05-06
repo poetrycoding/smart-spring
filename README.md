@@ -48,3 +48,9 @@
 #### 代码结构图
 
 ![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Factory-Bean.png)
+
+### 目标：实现Spring的事件
++ 代码分支：feat-event
+#### 代码结构图
+
+![Bean-instance-resource.drawio](./smart-spring-ioc/doc/Spring-event.png)
