@@ -2,9 +2,8 @@ package com.github.poetrycoding.springframework.aop.framework;
 
 import com.github.poetrycoding.springframework.aop.AdvisedSupport;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 
 import java.lang.reflect.Method;
 
@@ -31,7 +30,7 @@ public class Cglib2AopProxy implements AopProxy {
         enhancer.setSuperclass(advisedSupport.getTargetSource().getTarget().getClass());
         //设置父类接口
         enhancer.setInterfaces(advisedSupport.getTargetSource().getTargetClass());
-//        enhancer.setCallback();
+        enhancer.setCallback(new DynamicAdvisedInterceptor(advisedSupport));
         return enhancer;
     }
 
@@ -42,9 +41,14 @@ public class Cglib2AopProxy implements AopProxy {
             this.advisedSupport = advisedSupport;
         }
 
+
         @Override
-        public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-            return null;
+        public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+            CglibMethodInvocation cglibMethodInvocation = new CglibMethodInvocation(advisedSupport.getTargetSource().getTarget(), method, objects, methodProxy);
+            if (advisedSupport.getMethodMatcher().matches(method, advisedSupport.getTargetSource().getClass())) {
+                return advisedSupport.getMethodInterceptor().invoke(cglibMethodInvocation);
+            }
+            return cglibMethodInvocation.proceed();
         }
     }
 
