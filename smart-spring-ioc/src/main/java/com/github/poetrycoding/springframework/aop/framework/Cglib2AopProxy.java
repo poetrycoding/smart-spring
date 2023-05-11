@@ -31,7 +31,7 @@ public class Cglib2AopProxy implements AopProxy {
         //设置父类接口
         enhancer.setInterfaces(advisedSupport.getTargetSource().getTargetClass());
         enhancer.setCallback(new DynamicAdvisedInterceptor(advisedSupport));
-        return enhancer;
+        return enhancer.create();
     }
 
     private static class DynamicAdvisedInterceptor implements MethodInterceptor {

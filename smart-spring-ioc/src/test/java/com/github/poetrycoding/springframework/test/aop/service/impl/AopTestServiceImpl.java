@@ -4,7 +4,12 @@ import com.github.poetrycoding.springframework.test.aop.service.IAopTestService;
 
 public class AopTestServiceImpl implements IAopTestService {
     @Override
-    public void aopTest() {
-        System.out.println("AopTestServiceImpl.aopTest");
+    public String aopTest() {
+        return "hello aop Test";
+    }
+
+    @Override
+    public String aopReg() {
+        return "Hello Aop Reg";
     }
 }
