@@ -3,10 +3,7 @@ package com.github.poetrycoding.springframework.factory.support;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.poetrycoding.springframework.factory.*;
-import com.github.poetrycoding.springframework.factory.config.AutowireCapableBeanFactory;
-import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
-import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
-import com.github.poetrycoding.springframework.factory.config.BeanReference;
+import com.github.poetrycoding.springframework.factory.config.*;
 import com.github.poetrycoding.springframework.property.PropertyValue;
 import com.github.poetrycoding.springframework.property.PropertyValues;
 import com.github.poetrycoding.springframework.exception.BeansException;
@@ -29,6 +26,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected Object createBean(String beanName, BeanDefinition bd, Object[] args) throws BeansException {
         Object bean;
         try {
+            // 判断是否返回代理 Bean 对象
+            bean = resolveBeforeInstantiation(beanName, bd);
+            if (null != bean) {
+                return bean;
+            }
+
             bean = createBeanInstance(beanName, bd, args);
             //Bean属性填充
             applyPropertyValues(beanName, bean, bd);
@@ -46,6 +49,33 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             registerSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    private Object resolveBeforeInstantiation(String beanName, BeanDefinition bd) {
+        Object bean = applyBeanPostProcessorsBeforeInstantiation(bd.getBeanClass(), beanName);
+        if (null != bean) {
+            bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+        }
+        return bean;
+    }
+
+    /**
+     * 在 Bean 对象执行初始化方法之前，执行此方法
+     *
+     * @param beanClass class对象
+     * @param beanName  名称
+     * @return 返回对象
+     */
+    private Object applyBeanPostProcessorsBeforeInstantiation(Class beanClass, String beanName) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
+                if (null != result) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 
     /**
