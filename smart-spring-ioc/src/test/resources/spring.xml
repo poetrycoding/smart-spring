@@ -15,11 +15,24 @@
     <!--    -->
 
 
-    <bean class="com.github.poetrycoding.springframework.test.event.ContextRefreshedEventListener"/>
+<!--    <bean class="com.github.poetrycoding.springframework.test.event.ContextRefreshedEventListener"/>-->
 
-    <bean class="com.github.poetrycoding.springframework.test.event.CustomEventListener"/>
+<!--    <bean class="com.github.poetrycoding.springframework.test.event.CustomEventListener"/>-->
 
-    <bean class="com.github.poetrycoding.springframework.test.event.ContextClosedEventListener"/>
+<!--    <bean class="com.github.poetrycoding.springframework.test.event.ContextClosedEventListener"/>-->
 
 
+    <bean id="aopTestService" class="com.github.poetrycoding.springframework.test.aop.service.impl.AopTestServiceImpl"/>
+    <bean id="defaultAdvisorAutoProxyCreator" class="com.github.poetrycoding.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+    <bean id="beforeAdvice" class="com.github.poetrycoding.springframework.test.aop.AopServiceBeforeAdvice"/>
+
+    <bean id="methodInterceptor" class="com.github.poetrycoding.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="methodBeforeAdvice" ref="beforeAdvice"/>
+    </bean>
+
+    <bean id="pointcutAdvisor" class="com.github.poetrycoding.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+        <property name="expression" value="execution(* com.github.poetrycoding.springframework.test.aop.service.IAopTestService.*(..))"/>
+        <property name="advice" ref="methodInterceptor"/>
+    </bean>
 </beans>
