@@ -1,5 +1,7 @@
 package com.github.poetrycoding.springframework.aop;
 
+import com.github.poetrycoding.springframework.utils.ClassUtils;
+
 /**
  * Description: 被代理的目标对象
  * <br/>
@@ -25,8 +27,11 @@ public class TargetSource {
      * @return the type of targets returned by this {@link TargetSource}
      */
     public Class<?>[] getTargetClass() {
-        return this.target.getClass().getInterfaces();
+        Class<?> clazz = this.target.getClass();
+        clazz = ClassUtils.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        return clazz.getInterfaces();
     }
+
 
     /**
      * Return a target instance. Invoked immediately before the

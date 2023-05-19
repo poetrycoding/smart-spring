@@ -1,5 +1,7 @@
 package com.github.poetrycoding.springframework.test.dao;
 
+import com.github.poetrycoding.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,9 +13,15 @@ import java.util.Map;
  * @author laiql
  * @date 2023/4/26 22:58
  */
-public class StudentDAO {
+@Component(value = "studentDAO")
+public class StudentDAO implements IStudentDAO{
     private static Map<String, String> hashMap = new HashMap<>();
 
+    static {
+        hashMap.put("10001", "jack");
+        hashMap.put("10002", "八杯水");
+        hashMap.put("10003", "阿毛");
+    }
     public void initDataMethod(){
         System.out.println("执行：init-method");
         hashMap.put("10001", "jack");
@@ -26,7 +34,8 @@ public class StudentDAO {
         hashMap.clear();
     }
 
-    public String queryById(String id) {
-        return hashMap.get(id);
+    @Override
+    public String queryUserName(String uId) {
+        return hashMap.get(uId);
     }
 }

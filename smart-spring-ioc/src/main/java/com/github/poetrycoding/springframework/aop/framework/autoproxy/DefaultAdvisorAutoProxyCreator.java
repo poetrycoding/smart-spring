@@ -8,6 +8,7 @@ import com.github.poetrycoding.springframework.factory.BeanFactory;
 import com.github.poetrycoding.springframework.factory.BeanFactoryAware;
 import com.github.poetrycoding.springframework.factory.config.InstantiationAwareBeanPostProcessor;
 import com.github.poetrycoding.springframework.factory.support.DefaultListableBeanFactory;
+import com.github.poetrycoding.springframework.property.PropertyValues;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 
@@ -32,34 +33,47 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (isInfrastructureClass(bean.getClass())) {
+            return bean;
+        }
+
+        Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
+
+        for (AspectJExpressionPointcutAdvisor advisor : advisors) {
+            ClassFilter classFilter = advisor.getPointcut().getClassFilter();
+            // 过滤匹配类
+            if (!classFilter.matches(bean.getClass())) {
+                continue;
+            }
+
+            AdvisedSupport advisedSupport = new AdvisedSupport();
+
+            TargetSource targetSource = new TargetSource(bean);
+            advisedSupport.setTargetSource(targetSource);
+            advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
+            advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
+            advisedSupport.setProxyTargetClass(false);
+
+            // 返回代理对象
+            return new ProxyFactory(advisedSupport).getProxy();
+        }
+
         return bean;
     }
 
     @Override
+    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+        return true;
+    }
+
+    @Override
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
-        if (isInfrastructureClass(beanClass)) {
-            return null;
-        }
-        Collection<AspectJExpressionPointcutAdvisor> advisorCollection = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
-        for (AspectJExpressionPointcutAdvisor pointcutAdvisor : advisorCollection) {
-            ClassFilter classFilter = pointcutAdvisor.getPointcut().getClassFilter();
-            if (!classFilter.matches(beanClass)) {
-                continue;
-            }
-            AdvisedSupport advisedSupport = new AdvisedSupport();
-            TargetSource targetSource = null;
-            try {
-                targetSource = new TargetSource(beanClass.getDeclaredConstructor().newInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            advisedSupport.setTargetSource(targetSource);
-            advisedSupport.setMethodInterceptor((MethodInterceptor) pointcutAdvisor.getAdvice());
-            advisedSupport.setMethodMatcher(pointcutAdvisor.getPointcut().getMethodMatcher());
-            advisedSupport.setProxyTargetClass(false);
-            return new ProxyFactory(advisedSupport).getProxy();
-        }
         return null;
+    }
+
+    @Override
+    public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
+        return pvs;
     }
 
     private boolean isInfrastructureClass(Class<?> beanClass) {

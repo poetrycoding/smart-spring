@@ -6,10 +6,10 @@ import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
 import com.github.poetrycoding.springframework.factory.config.ConfigurableBeanFactory;
 import com.github.poetrycoding.springframework.utils.ClassUtils;
+import com.github.poetrycoding.springframework.utils.StringValueResolver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Description:
@@ -29,6 +29,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
      * BeanPostProcessors to apply in createBean
      */
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
+
+    /**
+     * String resolvers to apply e.g. to annotation attribute values
+     */
+    private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
+
 
     @Override
     public Object getBean(String beanName) throws BeansException {
@@ -104,6 +110,20 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         }
     }
 
+
+    @Override
+    public void addEmbeddedValueResolver(StringValueResolver valueResolver) {
+        this.embeddedValueResolvers.add(valueResolver);
+    }
+
+    @Override
+    public String resolveEmbeddedValue(String value) {
+        String result = value;
+        for (StringValueResolver resolver : this.embeddedValueResolvers) {
+            result = resolver.resolveStringValue(result);
+        }
+        return result;
+    }
 
     /**
      * 提供子类获取所有扩展处理器列表

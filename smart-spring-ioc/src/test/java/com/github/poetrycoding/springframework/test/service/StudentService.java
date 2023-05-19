@@ -4,6 +4,7 @@ import com.github.poetrycoding.springframework.context.ApplicationContext;
 import com.github.poetrycoding.springframework.context.ApplicationContextAware;
 import com.github.poetrycoding.springframework.exception.BeansException;
 import com.github.poetrycoding.springframework.factory.*;
+import com.github.poetrycoding.springframework.stereotype.Component;
 import com.github.poetrycoding.springframework.test.dao.IStudentDAO;
 
 /**
@@ -14,6 +15,7 @@ import com.github.poetrycoding.springframework.test.dao.IStudentDAO;
  * @author laiql
  * @date 2023/4/26 10:40
  */
+@Component(value = "studentService")
 public class StudentService implements InitializingBean, DisposableBean, ApplicationContextAware, BeanFactoryAware, BeanNameAware, BeanClassLoaderAware {
 
     private ApplicationContext applicationContext;
@@ -47,6 +49,7 @@ public class StudentService implements InitializingBean, DisposableBean, Applica
      * 测试方法
      */
     public void study() {
+        this.studentDAO = applicationContext.getBean("studentDAO",IStudentDAO.class);
         System.out.println("{" + studentDAO.queryUserName("10001") + "}--StudentService.study======> study spring ioc....[" + getName() + "]");
     }
 

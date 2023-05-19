@@ -10,6 +10,7 @@ import com.github.poetrycoding.springframework.exception.BeansException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * Description: 综合AbstractBeanFacto1y 并对接口AutowireCapableBeanFactory 进行实现。
@@ -32,7 +33,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 return bean;
             }
 
+            // 实例化 Bean
             bean = createBeanInstance(beanName, bd, args);
+            // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值
+            applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, bd);
             //Bean属性填充
             applyPropertyValues(beanName, bean, bd);
             //执行Bean的初始化方法和BeanPostProcessor的前置和后置处理方法
@@ -49,6 +53,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             registerSingleton(beanName, bean);
         }
         return bean;
+    }
+
+    private void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition bd) {
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
+                PropertyValues propertyValues = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(bd.getPropertyValues(), bean, beanName);
+                if (Objects.nonNull(propertyValues)) {
+                    for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+                        bd.getPropertyValues().addPropertyValue(propertyValue);
+                    }
+                }
+            }
+        }
     }
 
     private Object resolveBeforeInstantiation(String beanName, BeanDefinition bd) {

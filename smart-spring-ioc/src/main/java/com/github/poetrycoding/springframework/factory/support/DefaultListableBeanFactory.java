@@ -1,14 +1,11 @@
 package com.github.poetrycoding.springframework.factory.support;
 
-import com.github.poetrycoding.springframework.factory.ConfigurableListableBeanFactory;
-import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 import com.github.poetrycoding.springframework.exception.BeanDefinitionStoreException;
 import com.github.poetrycoding.springframework.exception.BeansException;
-import com.github.poetrycoding.springframework.factory.config.BeanPostProcessor;
+import com.github.poetrycoding.springframework.factory.ConfigurableListableBeanFactory;
+import com.github.poetrycoding.springframework.factory.config.BeanDefinition;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -44,6 +41,22 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             }
         });
         return result;
+    }
+
+    @Override
+    public <T> T getBean(Class<T> requiredType) throws BeansException {
+        List<String> beanNames = new ArrayList<>();
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
+            Class beanClass = entry.getValue().getBeanClass();
+            if (requiredType.isAssignableFrom(beanClass)) {
+                beanNames.add(entry.getKey());
+            }
+        }
+        if (1 == beanNames.size()) {
+            return getBean(beanNames.get(0), requiredType);
+        }
+
+        throw new BeansException(requiredType + "expected single bean but found " + beanNames.size() + ": " + beanNames);
     }
 
     @Override
